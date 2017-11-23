@@ -24,6 +24,8 @@ class mpu6050:
     GYRO_SCALE_MODIFIER_500DEG = 65.5
     GYRO_SCALE_MODIFIER_1000DEG = 32.8
     GYRO_SCALE_MODIFIER_2000DEG = 16.4
+    
+    MAGN_SCALE_MODIFIER = 1/0.3
 
     # Pre-defined ranges
     ACCEL_RANGE_2G = 0x00
@@ -52,9 +54,31 @@ class mpu6050:
 
     ACCEL_CONFIG = 0x1C
     GYRO_CONFIG = 0x1B
-
+    
+    # Magnetometer Registers
+    MAGN_ID = 0x00
+    MAGN_INFO = 0x01
+    MAGN_STATUS1 = 0x02	
+    MAGN_STATUS2 = 0x09
+    MAGN_CTRL = 0x0A
+    MAGN_SELFTEST = 0x0C
+    MAGN_IC2_DISABLE = 0x0F
+    
+    MAGN_XOUT0 = 0x03
+    MAGN_YOUT0 = 0x05
+    MAGN_ZOUT0 = 0x07
+    
+    MAGN_X_SENSITIVITY_ADJUST= 0x10
+    MAGN_Y_SENSITIVITY_ADJUST= 0x11
+    MAGN_Z_SENSITIVITY_ADJUST= 0x11    
+    
+    
     def __init__(self, address):
         self.address = address
+        self.accel = []
+        self.gyro = []
+        self.magn = []
+        self.temp = []
 
         # Wake up the MPU-6050 since it starts in sleep mode
         self.bus.write_byte_data(self.address, self.PWR_MGMT_1, 0x00)
@@ -232,14 +256,33 @@ class mpu6050:
         z = z / gyro_scale_modifier
 
         return {'x': x, 'y': y, 'z': z}
+    
+    def get_magn_data(self):
+        """Gets and returns the X, Y and Z values from the gyroscope.
+
+        Returns the read values in a dictionary.
+        """
+        x = self.read_i2c_word(self.MAGN_XOUT0)
+        y = self.read_i2c_word(self.MAGN_YOUT0)
+        z = self.read_i2c_word(self.MAGN_ZOUT0)
+        
+        x = x / self.MAGN_SCALE_MODIFIER
+        y = y / self.MAGN_SCALE_MODIFIER
+        z = z / self.MAGN_SCALE_MODIFIER
+
+
+        return {'x': x, 'y': y, 'z': z}
 
     def get_all_data(self):
         """Reads and returns all the available data."""
-        temp = self.get_temp()
-        accel = self.get_accel_data()
-        gyro = self.get_gyro_data()
+        self.temp = self.get_temp()
+        self.accel = self.get_accel_data()
+        self.gyro = self.get_gyro_data()
+        self.magn = self.get_magn_data()
 
-        return [accel, gyro, temp]
+        #return [accel, gyro, magn, temp]
+    
+
 
 if __name__ == "__main__":
     mpu = mpu6050(0x68)
