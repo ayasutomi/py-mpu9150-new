@@ -1,13 +1,14 @@
 """This program handles the communication over I2C
-between a Raspberry Pi and a MPU-6050 Gyroscope / Accelerometer combo.
-Made by: MrTijn/Tijndagamer
+between a Raspberry Pi and a MPU-9150 Gyroscope / Accelerometer combo.
+Made by: Andre Yasutomi
+Originally made by MrTijn/Tijndagamer under the name MPU-6050 
 Released under the MIT License
 Copyright (c) 2015, 2016, 2017 MrTijn/Tijndagamer
 """
 
 import smbus
 
-class mpu6050:
+class mpu9150:
 
     # Global Variables
     GRAVITIY_MS2 = 9.80665
@@ -285,7 +286,7 @@ class mpu6050:
 
 
 if __name__ == "__main__":
-    mpu = mpu6050(0x68)
+    mpu = mpu9150(0x68)
     print(mpu.get_temp())
     accel_data = mpu.get_accel_data()
     print(accel_data['x'])

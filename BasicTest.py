@@ -1,4 +1,4 @@
-from mpu6050 import mpu6050
+from mpu9150 import mpu9150
 import time
 from threading import Thread
 
@@ -11,7 +11,7 @@ def printData():
         sensor.temp))
     
 if __name__ == "__main__":
-    sensor = mpu6050(0x68)
+    sensor = mpu9150(0x68)
     print(sensor.read_accel_range())
     print(sensor.read_gyro_range())
     while True:
